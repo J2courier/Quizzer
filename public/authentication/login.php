@@ -35,8 +35,34 @@
     <script src="showpass.js"></script>
 </body>
 </html>
+
 <?php
+include "DatabaseConnection.php";
 if (isset($_POST["loginBtn"])){
+    //initialize the inputs
+    $username = $_POST["username"];
+    $password = $_POST["password"];
+    //verify the username and password if existing
+    $stmt = $connection->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
+    //for security purposes we need to bind the parameter
+    $stmt->bind_param("ss", $username, $password);
+    //then execute it
+    $stmt->execute();
+    $result = $stmt->get_result();
+    // session_start();
+    // $_SESSION['username'] = $username;
+    // $_SESSION['password'] = $password;
+    // header("Location: ../index.php");
+
+    // validate the result of query if there is a match in accounts then redirect to index.php which is the dashboard
+    if($result->num_rows > 0){
+        session_start();//this is a built in function for starting a session
+        $_SESSION['username'] = $username;
+        $_SESSION['password'] = $password;
+        header("Location: ../index.php");
+    } else {
+        echo"Invalid";
+    }
     
 }
 
